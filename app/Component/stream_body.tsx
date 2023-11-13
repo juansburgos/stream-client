@@ -44,13 +44,13 @@ export default function StreamBody() {
     })
 
     // @ts-ignore
-    var sourceBuffer,ws2, video;
-    var media = new MediaSource()
-    var src = URL.createObjectURL(media);
-    media.onsourceopen=function(){
-        // @ts-ignore
-        sourceBuffer = media.addSourceBuffer("video/webm;codecs=opus, vp8");
-    }
+    var sourceBuffer,ws2, video, media;
+    // var media = new MediaSource()
+    // var src = URL.createObjectURL(media);
+    // media.onsourceopen=function(){
+    //     // @ts-ignore
+    //     sourceBuffer = media.addSourceBuffer("video/webm;codecs=opus, vp8");
+    // }
 
     // @ts-ignore
     function handleStream(e){
@@ -62,38 +62,38 @@ export default function StreamBody() {
         }
         // @ts-ignore
         const buffer=e.data
-        // const data= new Uint8Array(buffer)
-        // if(data[0]===26&&data[1]===69&&data[2]===223){
-        //     // @ts-ignore
-        //     // if(media){
-        //     //     // @ts-ignore
-        //     //     URL.revokeObjectURL(media)
-        //     //     sourceBuffer=null;
-        //     // }
-        //
-        //     // media = new MediaSource();
-        //
-        //     // let src = URL.createObjectURL(media);
-        //     // @ts-ignore
-        //     // video.src = src;
-        //     // @ts-ignore
-        //     video.onloadedmetadata=function(){
-        //         // @ts-ignore
-        //         video.muted=false
-        //         // @ts-ignore
-        //         video.play()
-        //     }
-        //
-        //     media.onsourceopen=function(){
-        //         // @ts-ignore
-        //         sourceBuffer= media.addSourceBuffer("video/webm;codecs=opus, vp8");
-        //         sourceBuffer.appendBuffer(buffer)
-        //     }
-        //
-        // }
-        //
-        // else {
-        //     console.log("en el else")
+        const data= new Uint8Array(buffer)
+        if(data[0]===26&&data[1]===69&&data[2]===223){
+            // @ts-ignore
+            if(media){
+                // @ts-ignore
+                URL.revokeObjectURL(media)
+                sourceBuffer=null;
+            }
+
+            media = new MediaSource();
+
+            let src = URL.createObjectURL(media);
+            // @ts-ignore
+            video.src = src;
+            // @ts-ignore
+            video.onloadedmetadata=function(){
+                // @ts-ignore
+                video.muted=false
+                // @ts-ignore
+                video.play()
+            }
+
+            media.onsourceopen=function(){
+                // @ts-ignore
+                sourceBuffer= media.addSourceBuffer("video/webm;codecs=opus, vp8");
+                sourceBuffer.appendBuffer(buffer)
+            }
+
+        }
+
+        else {
+            console.log("en el else")
             // @ts-ignore
             if(!media)return;
 
@@ -101,7 +101,7 @@ export default function StreamBody() {
             // @ts-ignore
             sourceBuffer.appendBuffer(buffer)
 
-        // }
+        }
     }
     function connect2(){
         ws2 = new WebSocket("ws://localhost:8080/rooms/0?Id=999&username=frontViewer")
@@ -113,8 +113,8 @@ export default function StreamBody() {
 
 
     return (
-        <div> HOLA XD
-            <video id="videoID"></video>
+        <div>
+            <video style={{maxWidth:600, maxHeight:300}} id="videoID"></video>
         </div>
     )
 }

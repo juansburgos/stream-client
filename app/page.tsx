@@ -9,6 +9,7 @@ const Landing = () => {
 
 const fake_usernames = ["Juan", "Carlos", "Mariana", "Marcelo", "Romina", "Javier"]
 
+
 const [roomName, setRoomName] = useState('')
 const [rooms, setRooms] = useState<{ id: string; name:string; ownerName: string }[]>([])
 const { setConn } = useContext(WebsocketContext)
@@ -47,8 +48,12 @@ const router = useRouter()
                 })
             })
             if (res.ok) {
-                console.log("llego res")
-                getRooms()
+                
+                const response = await res.json()
+                // @ts-ignore
+                router.push('/room?id='+response.id)
+
+                console.log("Response " + response.id)
             }
         } catch (e) {
             console.log(e)
@@ -56,15 +61,7 @@ const router = useRouter()
     }
 
     const joinRoom = (roomId: string) => {
-        let username = fake_usernames[Math.floor(Math.random()*fake_usernames.length)];
-        const ws = new WebSocket(`ws://localhost:8080/rooms/${roomId}?Id=${uuidv4()}&username=${username}`)
-        if (ws.OPEN) {
-            setConn(ws)
-            router.push('/room')
-            return
-        } else {
-            router.push('/room')
-        }
+        router.push('/watch?id='+roomId)
     }
 
   return(

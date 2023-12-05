@@ -1,14 +1,14 @@
 'use client'
-import StreamBody from '../Component/stream_body'
+import ViewerBody from '../Component/viewer_body'
 
 
 
-export default function Room() {
+export default function Watch() {
 
     return (
         <>
             <div style={{resize: "none"}}>
-                <StreamBody />
+                <ViewerBody />
             </div>
             <div className='flex flex-col w-full'>
             </div>

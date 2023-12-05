@@ -4,14 +4,17 @@
 import {useEffect} from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function StreamBody() {
+export default function ViewerBody() {
     const params = useSearchParams()
+
     var bool = false
     var bool2 = false
+    //var sourceBuffer,ws2 = null, video, media;
+    //var queue = [];
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
             // @ts-ignore
-            var ws = null, mediaRecorder;
+            /*var ws = null, mediaRecorder;
 
             var options = {
                 mimeType: "video/webm;codecs=opus, vp8",
@@ -19,11 +22,8 @@ export default function StreamBody() {
             };
 
             function connect() {
-                if(bool) return
-                const id  = params.get('id')
-                console.log("id ",id)
                 let randomId = Math.floor(Math.random() * 10000) + 1;
-                ws = new WebSocket("ws://localhost:8080/rooms/" + id + "?Id=" + randomId + "&username=frontStreamer");
+                ws = new WebSocket("ws://localhost:8080/rooms/0?Id=" + randomId + "&username=frontStreamer");
                 ws.binaryType = "arraybuffer"
                 mediaRecorder = new MediaRecorder(stream, options);
                 mediaRecorder.ondataavailable = function (e) {
@@ -32,13 +32,14 @@ export default function StreamBody() {
                         e.data.arrayBuffer().then(buffer => {
                             // @ts-ignore
                             ws.send(buffer)
+                            console.log("Sent: ", e.data.size)
                         })
                     }
                 }
-                mediaRecorder.start(1000);
+                mediaRecorder.start(300);
                 bool = true
             }
-
+            */
             var sourceBuffer,ws2 = null, video, media;
             var queue = [];
 
@@ -53,6 +54,7 @@ export default function StreamBody() {
             }
 
             function createVideo() {
+                if (bool2) return
                 media = new MediaSource();
                 media.onsourceopen=function() {
                     sourceBuffer = media.addSourceBuffer("video/webm;codecs=opus, vp8");
@@ -69,9 +71,10 @@ export default function StreamBody() {
                 video.onerror = e => {
                     console.log("ERROR VIDEO")
                 }
+                bool2 = true
             }
 
-            /*function connect2(){
+            function connect2(){
                 const id  = params.get('id')
                 console.log("id v ",id)
                 if (bool2) {
@@ -82,14 +85,13 @@ export default function StreamBody() {
                 ws2.binaryType = "arraybuffer"
                 ws2.onopen = createVideo
                 ws2.onmessage = handleStream
-                bool2 = true
-            }*/
-
-            connect()
-            //connect2()
-        })
-
+            }
+            //connect()
+            connect2()
     })
+
+    }
+    )
 
     return (
         <div>

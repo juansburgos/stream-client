@@ -8,6 +8,7 @@ export default function StreamBody() {
     const params = useSearchParams()
     var bool = false
     var bool2 = false
+    var i = 0
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
             // @ts-ignore
@@ -15,7 +16,8 @@ export default function StreamBody() {
 
             var options = {
                 mimeType: "video/webm;codecs=opus, vp8",
-                bitsPerSecond: 5000 //quality
+                audioBitsPerSecond: 128000,
+                videoBitsPerSecond: 2500000,
             };
 
             function connect() {
@@ -31,6 +33,8 @@ export default function StreamBody() {
                     if (e.data && e.data.size > 0) {
                         e.data.arrayBuffer().then(buffer => {
                             // @ts-ignore
+                            i += 1
+                            if (i > 20 && i < 25) return
                             ws.send(buffer)
                         })
                     }
@@ -61,7 +65,7 @@ export default function StreamBody() {
                             sourceBuffer.appendBuffer(queue.shift())
                         }
                     }
-                    sourceBuffer.mode = "sequence"
+                    sourceBuffer.mode = "segments"
                 }
                 video = document.getElementById('videoID')
                 video.oncanplay = e => video.play()

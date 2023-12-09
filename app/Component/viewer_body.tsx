@@ -7,12 +7,13 @@ import { useSearchParams } from "next/navigation";
 export default function ViewerBody() {
     const params = useSearchParams()
 
-    var bool = false
-    var bool2 = false
-    //var sourceBuffer,ws2 = null, video, media;
-    //var queue = [];
+    // let bool = false
+    // let bool2 = false
+    let sourceBuffer, video, ws2 = null, media;
+    let queue = [];
+
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
+        // navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
             // @ts-ignore
             /*var ws = null, mediaRecorder;
 
@@ -20,6 +21,7 @@ export default function ViewerBody() {
                 mimeType: "video/webm;codecs=opus, vp8",
                 bitsPerSecond: 5000 //quality
             };
+
 
             function connect() {
                 let randomId = Math.floor(Math.random() * 10000) + 1;
@@ -40,12 +42,17 @@ export default function ViewerBody() {
                 bool = true
             }
             */
-            var sourceBuffer,ws2 = null, video, media;
-            var queue = [];
+            // let sourceBuffer,ws2 = null, video, media;
+            // let queue = [];
 
             function handleStream(e) {
+                if (media.readyState != 'open'){
+                    console.log("not open")
+                    return
+                }
                 const buffer = e.data
-                console.log("Appending: ", buffer.size)
+                console.log("Buffer: ", buffer)
+                if (!buffer) return
                 if (sourceBuffer.updating) {
                     queue.push(buffer)
                 } else {
@@ -54,44 +61,47 @@ export default function ViewerBody() {
             }
 
             function createVideo() {
-                if (bool2) return
+                // if (bool2) return
                 media = new MediaSource();
-                media.onsourceopen=function() {
+                media.onsourceopen = () => {
+                    // setTimeout(() => {
+                    //
+                    // }, 500)
                     sourceBuffer = media.addSourceBuffer("video/webm;codecs=opus, vp8");
-                    sourceBuffer.onupdate = e => {
+                    sourceBuffer.onupdateend = () => {
                         if (queue.length > 0 && !sourceBuffer.updating) {
                             sourceBuffer.appendBuffer(queue.shift())
                         }
                     }
-                    sourceBuffer.mode = "sequence"
+                    sourceBuffer.mode = "segments"
                 }
                 video = document.getElementById('videoID')
                 video.oncanplay = e => video.play()
                 video.src = URL.createObjectURL(media);
                 video.onerror = e => {
-                    console.log("ERROR VIDEO")
+                    console.log("ERROR VIDEO:", e)
                 }
-                bool2 = true
+                // bool2 = true
             }
 
             function connect2(){
                 const id  = params.get('id')
                 console.log("id v ",id)
-                if (bool2) {
-                    return
-                }
+                // if (bool2) {
+                //     return
+                // }
                 let randomId = Math.floor(Math.random() * 10000) + 1;
                 ws2 = new WebSocket("ws://localhost:8080/rooms/"+id+"?Id=" + randomId + "&username=frontViewer");
                 ws2.binaryType = "arraybuffer"
-                ws2.onopen = createVideo
+                // ws2.onopen = createVideo
                 ws2.onmessage = handleStream
             }
             //connect()
+            createVideo()
             connect2()
     })
 
-    }
-    )
+    // })
 
     return (
         <div>
